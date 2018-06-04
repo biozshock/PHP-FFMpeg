@@ -138,17 +138,19 @@ class Video extends Audio
         $commands = array('-y', '-i', $this->pathfile);
 
         $filters = clone $this->filters;
-        $filters->add(new SimpleFilter($format->getExtraParams(), 10));
-
-        if ($this->driver->getConfiguration()->has('ffmpeg.threads')) {
-            $filters->add(new SimpleFilter(array('-threads', $this->driver->getConfiguration()->get('ffmpeg.threads'))));
-        }
         if ($format instanceof VideoInterface) {
             if (null !== $format->getVideoCodec()) {
                 $filters->add(new SimpleFilter(array('-vcodec', $format->getVideoCodec())));
             }
         }
         if ($format instanceof AudioInterface) {
+            $filters->add(new SimpleFilter($format->getExtraParams(), 10));
+
+            if ($this->driver->getConfiguration()->has('ffmpeg.threads')) {
+                $filters->add(
+                    new SimpleFilter(array('-threads', $this->driver->getConfiguration()->get('ffmpeg.threads')))
+                );
+            }
             if (null !== $format->getAudioCodec()) {
                 $filters->add(new SimpleFilter(array('-acodec', $format->getAudioCodec())));
             }
